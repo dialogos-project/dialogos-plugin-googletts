@@ -4,6 +4,8 @@ This plugin adds a node for speech synthesis with [Google Text-to-Speech](https:
 
 Google TTS is a commercial product that may incur costs. You can find pricing details [here](https://cloud.google.com/text-to-speech/pricing); at the time of development, the first one million characters you synthesize each month are free.
 
+The text is converted to speech on a Google server. This requires an Internet connection.
+
 ## Usage
 
 Drag the node "Google TTS" from the toolbar to the Canvas and use it as you would use the regular speech synthesis nodes in DialogOS.
