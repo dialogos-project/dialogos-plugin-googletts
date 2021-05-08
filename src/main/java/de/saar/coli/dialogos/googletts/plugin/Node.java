@@ -3,6 +3,7 @@ package de.saar.coli.dialogos.googletts.plugin;
 import com.clt.diamant.graph.nodes.AbstractOutputNode;
 import com.clt.speech.SpeechException;
 import com.clt.speech.tts.VoiceName;
+import com.clt.util.StringTools;
 
 import java.util.List;
 import java.util.Map;
@@ -52,9 +53,17 @@ public class Node extends AbstractOutputNode {
             Plugin.stopSpeaking();
         }
 
-        // TODO handle default voice
-        VoiceName voice = (VoiceName) properties.get(VOICE);
+        VoiceName voice = getVoice();
         Plugin.speak(prompt, voice.getVoice(), isWaitUntilFinished());
+    }
+
+    private VoiceName getVoice() {
+        Settings settings = (Settings) this.getGraph().getOwner().getPluginSettings(Plugin.class);
+        VoiceName voicename = (VoiceName) properties.get(VOICE);
+        if ((voicename == null) || StringTools.isEmpty(voicename.getName())) {
+            voicename = settings.getDefaultVoice();
+        }
+        return voicename;
     }
 
     @Override
