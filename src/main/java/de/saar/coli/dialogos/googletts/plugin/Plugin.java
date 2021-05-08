@@ -19,6 +19,7 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
     private static List<VoiceName> voices = new ArrayList<>();
     private static TextToSpeechClient client;
     private static AudioPlayer player = new AudioPlayer();
+    private static Map<String,VoiceName> nameToVoice = new HashMap<>();
 
     @Override
     public void initialize() {
@@ -37,6 +38,7 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
                     GoogleVoiceWrapper wrapped = new GoogleVoiceWrapper(voice);
                     VoiceName vn = new VoiceName(wrapped.getName(), wrapped);
                     voices.add(vn);
+                    nameToVoice.put(wrapped.getName(), vn);
                 }
 
                 // not registered if an exception happened above
@@ -45,6 +47,10 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
         } catch (Exception e) {
             OptionPane.error(null, "Google TTS plugin disabled: " + e.getMessage());
         }
+    }
+
+    static VoiceName findVoice(String name) {
+        return nameToVoice.get(name);
     }
 
     private static File findCredentialsFile() {

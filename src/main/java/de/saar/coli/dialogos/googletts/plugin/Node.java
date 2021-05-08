@@ -1,5 +1,6 @@
 package de.saar.coli.dialogos.googletts.plugin;
 
+import com.clt.diamant.IdMap;
 import com.clt.diamant.graph.nodes.AbstractOutputNode;
 import com.clt.diamant.gui.NodePropertiesDialog;
 import com.clt.gui.GUI;
@@ -7,6 +8,8 @@ import com.clt.gui.OptionPane;
 import com.clt.speech.SpeechException;
 import com.clt.speech.tts.VoiceName;
 import com.clt.util.StringTools;
+import com.clt.xml.XMLReader;
+import org.xml.sax.SAXException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -224,5 +227,17 @@ public class Node extends AbstractOutputNode {
         jtp.addTab("Speech Synthesis", p);
         jtp = addMoreTabsToEditorComponent(jtp);
         return jtp;
+    }
+
+    @Override
+    protected void readAttribute(XMLReader r, String name, String value, IdMap uid_map) throws SAXException {
+        if( name.equals(VOICE)) {
+            VoiceName voice = Plugin.findVoice(value);
+            if( voice != null ) {
+                this.setProperty(VOICE, voice);
+            }
+        } else {
+            super.readAttribute(r, name, value, uid_map);
+        }
     }
 }

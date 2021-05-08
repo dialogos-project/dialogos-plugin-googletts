@@ -3,6 +3,7 @@ package de.saar.coli.dialogos.googletts.plugin;
 import com.clt.dialogos.plugin.PluginRuntime;
 import com.clt.dialogos.plugin.PluginSettings;
 import com.clt.diamant.IdMap;
+import com.clt.diamant.graph.Graph;
 import com.clt.gui.GUI;
 import com.clt.gui.OptionPane;
 import com.clt.properties.*;
@@ -61,12 +62,18 @@ public class Settings extends PluginSettings {
 
     @Override
     public void writeAttributes(XMLWriter out, IdMap uidMap) {
-
+        Graph.printAtt(out, "defaultVoice", defaultVoice.getValue().getName());
     }
 
     @Override
     protected void readAttribute(XMLReader r, String name, String value, IdMap uid_map) throws SAXException {
+        if( name.equals("defaultVoice")) {
+            VoiceName voice = Plugin.findVoice(value);
 
+            if( voice != null ) {
+                defaultVoice.setValue(voice);
+            }
+        }
     }
 
     @Override
