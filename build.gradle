@@ -17,11 +17,11 @@ repositories {
 }
 
 dependencies {
-    implementation(group:'com.github.dialogos-project', name:'dialogos', version:'2.1.3') {
+    implementation(group:'com.github.dialogos-project', name:'dialogos', version:'-SNAPSHOT') { // -SNAPSHOT is current Jitpack version
         exclude module: 'DialogOS_SphinxPlugin'
         exclude module: 'DialogOS_MaryTTSPlugin'
     }
-    runtime group:'com.github.dialogos-project', name:'dialogos', version:'2.1.3' // more fun to test with plugins  // TODO - do I need this?
+    runtime group:'com.github.dialogos-project', name:'dialogos', version:'-SNAPSHOT' // more fun to test with plugins  // TODO - do I need this?
 
     implementation platform('com.google.cloud:libraries-bom:20.2.0')
     compile 'com.google.cloud:google-cloud-texttospeech'
@@ -42,6 +42,7 @@ publishing {
     }
 }
 
-application {
-    applicationDefaultJvmArgs = ['-Duser.country=DE', '-Duser.language=de']
-}
+// uncomment this to test the plugin in German
+//application {
+//    applicationDefaultJvmArgs = ['-Duser.country=DE', '-Duser.language=de']
+//}
