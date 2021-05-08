@@ -1,4 +1,4 @@
-package de.saar.coli.dialogos.googletts.plugin;
+package de.saar.coli.dialogos.googletts;
 
 import com.clt.speech.Language;
 import com.clt.speech.tts.Voice;

@@ -1,4 +1,4 @@
-package de.saar.coli.dialogos.googletts.plugin;
+package de.saar.coli.dialogos.googletts;
 
 import com.clt.diamant.IdMap;
 import com.clt.diamant.graph.nodes.AbstractOutputNode;
@@ -7,7 +7,6 @@ import com.clt.gui.GUI;
 import com.clt.gui.OptionPane;
 import com.clt.speech.SpeechException;
 import com.clt.speech.tts.VoiceName;
-import com.clt.util.StringTools;
 import com.clt.xml.XMLReader;
 import org.xml.sax.SAXException;
 

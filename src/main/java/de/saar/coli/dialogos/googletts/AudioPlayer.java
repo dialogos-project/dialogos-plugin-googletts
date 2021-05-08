@@ -1,4 +1,4 @@
-package de.saar.coli.dialogos.googletts.plugin;
+package de.saar.coli.dialogos.googletts;
 
 import javax.sound.sampled.*;
 import java.io.File;

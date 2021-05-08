@@ -1,4 +1,4 @@
-package de.saar.coli.dialogos.googletts.plugin;
+package de.saar.coli.dialogos.googletts;
 
 import com.clt.resources.DynamicResourceBundle;
 import com.clt.util.StringTools;
