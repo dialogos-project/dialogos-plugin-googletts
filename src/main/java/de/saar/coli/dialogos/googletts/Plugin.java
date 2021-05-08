@@ -32,20 +32,42 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
                 GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsFilename));
                 TextToSpeechSettings settings = TextToSpeechSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
                 client = TextToSpeechClient.create(settings);
-                ListVoicesResponse response = client.listVoices("en-US");
 
-                for (Voice voice : response.getVoicesList()) {
-                    GoogleVoiceWrapper wrapped = new GoogleVoiceWrapper(voice);
-                    VoiceName vn = new VoiceName(wrapped.getName(), wrapped);
-                    voices.add(vn);
-                    nameToVoice.put(wrapped.getName(), vn);
-                }
+                collectVoices(client.listVoices("en-US"));
+                collectVoices(client.listVoices("de-DE"));
+                Collections.sort(voices, new VoiceNameComparator());
 
                 // not registered if an exception happened above
                 Node.registerNodeTypes(com.clt.speech.Resources.getResources().createLocalizedString("IONode"), Arrays.asList(Node.class));
             }
         } catch (Exception e) {
             OptionPane.error(null, "Google TTS plugin disabled: " + e.getMessage());
+        }
+    }
+
+    private static class VoiceNameComparator implements Comparator<VoiceName> {
+        @Override
+        public int compare(VoiceName o1, VoiceName o2) {
+            GoogleVoiceWrapper g1 = (GoogleVoiceWrapper) o1.getVoice();
+            GoogleVoiceWrapper g2 = (GoogleVoiceWrapper) o2.getVoice();
+
+            String l1 = g1.getLanguage().getName();
+            String l2 = g2.getLanguage().getName();
+
+            if( ! l1.equals(l2) ) {
+                return l1.compareTo(l2);
+            } else {
+                return g1.getName().compareTo(g2.getName());
+            }
+        }
+    }
+
+    private void collectVoices(ListVoicesResponse response) {
+        for (Voice voice : response.getVoicesList()) {
+            GoogleVoiceWrapper wrapped = new GoogleVoiceWrapper(voice);
+            VoiceName vn = new VoiceName(wrapped.getName(), wrapped);
+            voices.add(vn);
+            nameToVoice.put(wrapped.getName(), vn);
         }
     }
 

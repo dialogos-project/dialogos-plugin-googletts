@@ -14,7 +14,12 @@ public class GoogleVoiceWrapper implements Voice {
 
     @Override
     public String getName() {
+//        return String.format("[%s] %s", voice.getLanguageCodes(0), voice.getName());
         return voice.getName();
+    }
+
+    public String getNameWithLanguage() {
+        return voice.getLanguageCodes(0) + " " + voice.getName();
     }
 
     @Override
