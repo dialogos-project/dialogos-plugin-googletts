@@ -94,6 +94,8 @@ public class Node extends AbstractOutputNode {
      * The code below is an almost-exact duplicate of code in AbstractOutputNode.
      * It is a workaround for https://github.com/dialogos-project/dialogos/issues/214
      * and should be removed as soon as that issue is closed.
+     *
+     * Also need to pull resource key "SpeechSynthesis" into AbstractOutputNode.
      */
     private JComboBox cbVoices;
 
@@ -223,7 +225,7 @@ public class Node extends AbstractOutputNode {
 
         //Add tabs
         JTabbedPane jtp = new JTabbedPane();
-        jtp.addTab("Speech Synthesis", p);
+        jtp.addTab(Resources.getString("SpeechSynthesis"), p);
         jtp = addMoreTabsToEditorComponent(jtp);
         return jtp;
     }

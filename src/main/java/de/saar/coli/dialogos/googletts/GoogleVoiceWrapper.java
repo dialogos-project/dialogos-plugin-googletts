@@ -9,17 +9,11 @@ public class GoogleVoiceWrapper implements Voice {
 
     public GoogleVoiceWrapper(com.google.cloud.texttospeech.v1.Voice voice) {
         this.voice = voice;
-        System.err.printf("NEW VOICE %s: %s\n", getLanguage(), getName());
     }
 
     @Override
     public String getName() {
-//        return String.format("[%s] %s", voice.getLanguageCodes(0), voice.getName());
         return voice.getName();
-    }
-
-    public String getNameWithLanguage() {
-        return voice.getLanguageCodes(0) + " " + voice.getName();
     }
 
     @Override

@@ -27,7 +27,7 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
 
         try {
             if (credentialsFilename == null) {
-                throw new RuntimeException("Could not find credentials file");
+                throw new RuntimeException(Resources.getString("CouldNotFindCredentials"));
             } else {
                 GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsFilename));
                 TextToSpeechSettings settings = TextToSpeechSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
@@ -41,10 +41,11 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
                 Node.registerNodeTypes(com.clt.speech.Resources.getResources().createLocalizedString("IONode"), Arrays.asList(Node.class));
             }
         } catch (Exception e) {
-            OptionPane.error(null, "Google TTS plugin disabled: " + e.getMessage());
+            OptionPane.error(null, Resources.getString("PluginDisabled") + " " + e.getMessage());
         }
     }
 
+    // sorts by language, then voice name
     private static class VoiceNameComparator implements Comparator<VoiceName> {
         @Override
         public int compare(VoiceName o1, VoiceName o2) {
@@ -149,16 +150,12 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
             throw new SpeechException(e);
         }
 
-        System.err.printf("Saved synthesis to %s\n", f.getAbsolutePath());
-
         // Play audio
         try {
             player.play(f);
-            System.err.println("now playing");
 
             if (waitUntilFinished) {
                 player.waitUntilFinished();
-                System.err.println("done");
             }
         } catch (Exception e) {
             throw new SpeechException(e);

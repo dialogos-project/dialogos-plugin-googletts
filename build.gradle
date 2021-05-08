@@ -42,3 +42,6 @@ publishing {
     }
 }
 
+application {
+    applicationDefaultJvmArgs = ['-Duser.country=DE', '-Duser.language=de']
+}

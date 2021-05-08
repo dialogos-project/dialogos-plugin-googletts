@@ -27,7 +27,7 @@ public class Settings extends PluginSettings {
 
         if (voices.isEmpty()) {
             // plugin disabled because of an error in initialize()
-            VoiceName dummy = new VoiceName("<Plugin disabled>", null);
+            VoiceName dummy = new VoiceName(Resources.getString("DisabledPlugin"), null);
             voices.add(dummy);
         }
 

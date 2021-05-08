@@ -5,10 +5,21 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * A class for playing audio files.
+ */
 public class AudioPlayer {
     private Clip clip = null;
     private CountDownLatch syncLatch;
 
+    /**
+     * Load an audio file and start playing it concurrently.
+     *
+     * @param file
+     * @throws IOException
+     * @throws UnsupportedAudioFileException
+     * @throws LineUnavailableException
+     */
     public synchronized void play(File file) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         if( clip != null ) {
             stop();
@@ -29,23 +40,25 @@ public class AudioPlayer {
         clip.start();
     }
 
+    /**
+     * Wait until the current audio stream has finished playing.
+     *
+     * @throws InterruptedException
+     */
     public synchronized void waitUntilFinished() throws InterruptedException {
         if( clip != null ) {
             syncLatch.await();
         }
     }
 
+    /**
+     * Stop the currently playing audio stream.
+     */
     public synchronized void stop() {
         if( clip != null ) {
             clip.stop();
             clip.close();
             clip = null;
         }
-    }
-
-    public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException, InterruptedException {
-        AudioPlayer a = new AudioPlayer();
-        a.play(new File ("/Users/koller/Documents/workspace/mxml-mary/audio.wav"));
-        a.waitUntilFinished();
     }
 }
