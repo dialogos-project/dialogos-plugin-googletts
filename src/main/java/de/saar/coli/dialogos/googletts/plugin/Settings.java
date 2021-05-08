@@ -3,6 +3,8 @@ package de.saar.coli.dialogos.googletts.plugin;
 import com.clt.dialogos.plugin.PluginRuntime;
 import com.clt.dialogos.plugin.PluginSettings;
 import com.clt.diamant.IdMap;
+import com.clt.gui.GUI;
+import com.clt.gui.OptionPane;
 import com.clt.properties.DefaultEnumProperty;
 import com.clt.properties.EnumProperty;
 import com.clt.properties.Property;
@@ -15,7 +17,10 @@ import org.xml.sax.SAXException;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.Locale;
 
 public class Settings extends PluginSettings {
     private final EnumProperty<VoiceName> defaultVoice;
@@ -70,7 +75,7 @@ public class Settings extends PluginSettings {
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         final JButton tryPrompt = new JButton(Resources.getString("Try"));
-//        tryPrompt.addActionListener(new TryPromptActionListener(tryPrompt)); // TODO
+        tryPrompt.addActionListener(new TryPromptActionListener(tryPrompt));
         bottom.add(tryPrompt);
         p.add(bottom, BorderLayout.SOUTH);
         return p;
@@ -87,4 +92,54 @@ public class Settings extends PluginSettings {
     }
 
 
+
+    private class TryPromptActionListener implements ActionListener {
+        JButton tryPrompt;
+        boolean speaking = false;
+
+        TryPromptActionListener(JButton tryPrompt) {
+            this.tryPrompt = tryPrompt;
+        }
+
+        private void reset() {
+            Plugin.stopSpeaking();
+            speaking = false;
+            tryPrompt.setText(Resources.getString("Try"));
+        }
+
+        public synchronized void actionPerformed(ActionEvent e) {
+
+            if (speaking) {
+                this.reset();
+            } else {
+                new Thread(() -> {
+                    try {
+                        speaking = true;
+                        tryPrompt.setText(GUI.getString("Cancel"));
+
+                        Locale language
+                                = Settings.this.defaultVoice.getValue()
+                                .getVoice()
+                                .getLanguage().getLocale();
+                        if (language.equals(Locale.UK) || language.equals(Locale.US)) {
+                            language = new Locale("", "");
+                        }
+                        String prompt
+                                = Resources.format("VoiceSample", language,
+                                Settings.this.defaultVoice.getValue()
+                                        .getNormalizedName());
+                        Plugin.speak(prompt, Settings.this.defaultVoice.getValue().getVoice(), true);
+                    } catch (Exception exn) {
+                        String msg = exn.getLocalizedMessage();
+                        if ((msg == null) || (msg.length() == 0)) {
+                            msg = exn.getClass().getName();
+                        }
+                        OptionPane.error(tryPrompt, msg);
+                    }
+                    reset();
+                }).start();
+            }
+        }
+
+    }
 }
