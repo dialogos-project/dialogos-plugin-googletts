@@ -2,6 +2,7 @@ package de.saar.coli.dialogos.googletts.plugin;
 
 import com.clt.dialogos.plugin.PluginSettings;
 import com.clt.gui.Images;
+import com.clt.gui.OptionPane;
 import com.clt.script.exp.ExecutableFunctionDescriptor;
 import com.clt.speech.SpeechException;
 import com.clt.speech.tts.VoiceName;
@@ -12,10 +13,7 @@ import com.google.protobuf.ByteString;
 
 import javax.swing.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Plugin implements com.clt.dialogos.plugin.Plugin {
     private static List<VoiceName> voices = new ArrayList<>();
@@ -24,23 +22,45 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
 
     @Override
     public void initialize() {
-        Node.registerNodeTypes(com.clt.speech.Resources.getResources().createLocalizedString("IONode"),
-                Arrays.asList(Node.class));
-
+        File credentialsFilename = findCredentialsFile();
 
         try {
-            GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream("singing-313106-78d694b595e2.json"));
-            TextToSpeechSettings settings = TextToSpeechSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
-            client = TextToSpeechClient.create(settings);
-            ListVoicesResponse response = client.listVoices("en-US");
+            if (credentialsFilename == null) {
+                throw new RuntimeException("Could not find credentials file");
+            } else {
+                GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsFilename));
+                TextToSpeechSettings settings = TextToSpeechSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
+                client = TextToSpeechClient.create(settings);
+                ListVoicesResponse response = client.listVoices("en-US");
 
-            for(Voice voice : response.getVoicesList()) {
-                GoogleVoiceWrapper wrapped = new GoogleVoiceWrapper(voice);
-                voices.add(new VoiceName(wrapped.getName(), wrapped));
+                for (Voice voice : response.getVoicesList()) {
+                    GoogleVoiceWrapper wrapped = new GoogleVoiceWrapper(voice);
+                    VoiceName vn = new VoiceName(wrapped.getName(), wrapped);
+                    voices.add(vn);
+                }
+
+                // not registered if an exception happened above
+                Node.registerNodeTypes(com.clt.speech.Resources.getResources().createLocalizedString("IONode"), Arrays.asList(Node.class));
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            OptionPane.error(null, "Google TTS plugin disabled: " + e.getMessage());
         }
+    }
+
+    private static File findCredentialsFile() {
+        File[] candidates = new File[]{
+                new File("googletts-credentials.json"),
+                new File(System.getProperty("user.home"), ".googletts-credentials.json"),
+                new File(System.getProperty("user.home"), "googletts-credentials.json")
+        };
+
+        for (File candidate : candidates) {
+            if (candidate.exists()) {
+                return candidate;
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -108,7 +128,7 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
             player.play(f);
             System.err.println("now playing");
 
-            if( waitUntilFinished ) {
+            if (waitUntilFinished) {
                 player.waitUntilFinished();
                 System.err.println("done");
             }

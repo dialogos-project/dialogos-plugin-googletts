@@ -5,10 +5,7 @@ import com.clt.dialogos.plugin.PluginSettings;
 import com.clt.diamant.IdMap;
 import com.clt.gui.GUI;
 import com.clt.gui.OptionPane;
-import com.clt.properties.DefaultEnumProperty;
-import com.clt.properties.EnumProperty;
-import com.clt.properties.Property;
-import com.clt.properties.PropertySet;
+import com.clt.properties.*;
 import com.clt.speech.tts.Voice;
 import com.clt.speech.tts.VoiceName;
 import com.clt.xml.XMLReader;
@@ -28,19 +25,26 @@ public class Settings extends PluginSettings {
     public Settings() {
         List<VoiceName> voices = Plugin.getAvailableVoices();
 
-        this.defaultVoice = new DefaultEnumProperty<VoiceName>("voice",
-                Resources.getString("DefaultVoice"), null, voices
-                .toArray(new VoiceName[voices.size()]), voices.get(0)) {
+        if (voices.isEmpty()) {
+            // plugin disabled because of an error in initialize()
+            VoiceName dummy = new VoiceName("<Plugin disabled>", null);
+            voices.add(dummy);
+        }
+
+
+        defaultVoice = new DefaultEnumProperty<VoiceName>(
+                "voice",
+                Resources.getString("DefaultVoice"),
+                null,
+                voices.toArray(new VoiceName[voices.size()]), voices.get(0)) {
 
             @Override
             public String getName() {
-
                 return Resources.getString("DefaultVoice");
             }
 
             @Override
             public void setValueFromString(String value) {
-
                 for (VoiceName n : this.getPossibleValues()) {
                     if (n.toString().equals(value) || n.getName().equals(value)) {
                         this.setValue(n);
@@ -92,7 +96,6 @@ public class Settings extends PluginSettings {
     }
 
 
-
     private class TryPromptActionListener implements ActionListener {
         JButton tryPrompt;
         boolean speaking = false;
@@ -117,17 +120,12 @@ public class Settings extends PluginSettings {
                         speaking = true;
                         tryPrompt.setText(GUI.getString("Cancel"));
 
-                        Locale language
-                                = Settings.this.defaultVoice.getValue()
-                                .getVoice()
-                                .getLanguage().getLocale();
+                        Locale language = Settings.this.defaultVoice.getValue().getVoice().getLanguage().getLocale();
                         if (language.equals(Locale.UK) || language.equals(Locale.US)) {
                             language = new Locale("", "");
                         }
-                        String prompt
-                                = Resources.format("VoiceSample", language,
-                                Settings.this.defaultVoice.getValue()
-                                        .getNormalizedName());
+
+                        String prompt = Resources.format("VoiceSample", language, Settings.this.defaultVoice.getValue().getNormalizedName());
                         Plugin.speak(prompt, Settings.this.defaultVoice.getValue().getVoice(), true);
                     } catch (Exception exn) {
                         String msg = exn.getLocalizedMessage();
