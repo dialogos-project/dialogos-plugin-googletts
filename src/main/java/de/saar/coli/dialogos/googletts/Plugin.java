@@ -120,9 +120,8 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
 
 
     @Override
-    public String getVersion() {
-        return "1";
-    }
+    public String getVersion() { return "1.0";  }  // DO NOT EDIT - This line is updated automatically by the make-release script.
+
 
     @Override
     public PluginSettings createDefaultSettings() {
